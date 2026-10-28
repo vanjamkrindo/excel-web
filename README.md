@@ -84,6 +84,35 @@ inlines `xlsx.full.min.js` from `tracking-klaim-ui/vendor` and closes `</script>
   `D4` carries `f=SUM(D2:D3)` with `v=40000`; re-importing restores the formulas.
 - Print CSS hides the ribbon, tabs, formula bar and status bar; only the grid prints.
 
+## Multi-workbook (berbilang buku kerja)
+
+Lebih daripada satu buku kerja boleh dibuka serentak, masing-masing dengan nama dan data sendiri.
+
+- Bar buku kerja di bawah tab ribbon: senarai semua buku terbuka, titik merah menandakan belum
+  disimpan, `✕` menutup, `＋` membuka buku baru. Klik dua kali untuk menamakan semula.
+- Menukar buku melalui `switchWB()`; sejarah undo/redo setiap buku berasingan.
+- Semua buku disimpan berasingan dalam `localStorage` (`excel-web-workbooks-v1`) dan dipulihkan
+  selepas dimuat semula.
+
+### Mod samping (side by side)
+
+Butang `▥` membahagi tetingkap kepada dua panel, setiap panel memaparkan buku kerja yang berlainan
+serentak — pada tablet ini benar-benar dua fail kelihatan bersamaan. Garis pemisah boleh diseret
+(seret dengan jari pun boleh), dan setiap panel memaparkan nilai yang telah dikira (bukan teks
+rumus).
+
+### Mengenai "dua tetingkap Android"
+
+APK yang dibungkus sebagai TWA mempunyai **satu** activity, jadi JavaScript di dalamnya tidak boleh
+membuka tetingkap Android kedua — itu memerlukan kod Java/Kotlin asli. Yang disediakan:
+
+1. **Mod samping** di atas (dua buku dalam satu aplikasi).
+2. Butang `↗` "Open in new window" — membuka tetingkap/ tab pelayar sebenar di mana platform
+   membenarkan; jika disekat, ia beralih kepada mod samping secara automatik.
+3. **Split-screen Android asli** masih boleh digunakan: buka aplikasi, kemudian guna gesture
+   split-screen sistem (Samsung/OnePlus/Xiaomi ada) — itu dua contoh aplikasi, masing-masing
+   dengan storannya sendiri.
+
 ## Measured against real Excel 2016
 
 A screenshot of Excel 2016 (Office16, 150 % DPI) was captured and pixel-measured; the clone was
@@ -114,6 +143,28 @@ Styles / Cells / Editing = big labelled buttons with trailing chevrons) and the 
 - **No Clipboard task pane, no Quick Analysis, no Tell Me command list beyond the built-in search.**
 - Dialog launchers appear on Font, Alignment and Number only; Excel also shows one on Clipboard,
   which opens a pane this app does not have.
+
+## Android (PWA + APK)
+
+Fail sedia PWA ada di repo: `manifest.webmanifest`, `sw.js` (cache-first, berfungsi luar talian),
+dan `icons/` (192, 512, maskable 512). `.well-known/assetlinks.json` + `.nojekyll` disediakan supaya
+TWA dapat disahkan dan berjalan tanpa bar alamat.
+
+Sentuhan Android: sasaran ketik diperbesar (`@media (pointer:coarse)`), ribbon menggelongsor
+mendatar pada telefon dan tidak berpecah menjadi dua baris, dan padding `env(safe-area-inset-*)` serta
+`100dvh` digunakan supaya sesuai dengan skrin bertakuk dan bar navigasi.
+
+URL Pages: https://vanjamkrindo.github.io/excel-web/
+
+### Membina APK
+
+```bash
+python tools/retry_apk.py      # enqueue -> poll -> muat turun ke apk-out/package.zip
+```
+
+ZIP mengandungi `.apk`, `.aab`, `signing.keystore` dan `assetlinks.json`. Salin cap jari SHA-256
+daripada `signing-key-info.txt` ke dalam `.well-known/assetlinks.json`, hantar, tunggu ia menjawab
+200, kemudian pasang APK.
 
 ## Honest limits
 
